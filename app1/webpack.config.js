@@ -8,67 +8,161 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const { BundleStatsWebpackPlugin } = require('bundle-stats-webpack-plugin');
 
+function filterByEntryPoint(entry) {
+  return function (module, chunks) {
+      for (let i = 0; i < chunks.length; i++) {
+          const chunk = chunks[i];
+
+          if (chunk.groupsIterable) {
+              for (const group of chunk.groupsIterable) {
+                  if (group.getParents()[0]) {
+
+                    debugger
+                      console.log(group.getParents()[0].name);
+                      if (group.getParents()[0].name === entry) {
+                          return true;
+                      }
+                  }
+              }
+          }
+      }
+
+      return false;
+  };
+}
+
+const FILTER_CHUNK_TYPE = {
+  ALL: 'all',
+  ASYNC: 'async',
+  INITIAL: 'initial'
+};
+function filterChunkByEntryPoint({ chunk, entryName, chunkType } = {}) {
+  const validateMap = {
+    [FILTER_CHUNK_TYPE.ALL]: () => true,
+    [FILTER_CHUNK_TYPE.ASYNC]: () => !chunk.canBeInitial(),
+    [FILTER_CHUNK_TYPE.INITIAL]: () => chunk.canBeInitial()
+  };
+
+  if (validateMap[chunkType] && validateMap[chunkType]() && chunk.groupsIterable) {
+    for (const group of chunk.groupsIterable) {
+      let currentGroup = group;
+
+      while (currentGroup) {
+        const parentGroup = currentGroup.getParents()[0];
+
+        console.log(parentGroup?.name)
+
+        if (parentGroup) {
+          currentGroup = parentGroup;
+        } else {
+          break;
+        }
+      }
+
+      console.log('cc',currentGroup.name)
+
+      // entrypoint
+      if (currentGroup.name === entryName) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 const defaultWebpackSplit = {
   chunks: 'all',
   minSize: 50000,
   minRemainingSize: 0,
   minChunks: 1,
-  // maxAsyncRequests: 30,
-  // maxInitialRequests: 30,
+  maxAsyncRequests: 30,
+  maxInitialRequests: 20,
   enforceSizeThreshold: 50000,
   cacheGroups: {
       'vendor-core-components': {
-        // test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
-        test: (te, teee) =>{
-          if(te.resource?.includes('date-fns')){
-            
-            // console.log('31', te?.rawRequest)
-            // console.log('🚀 ~ file: webpack.config.js:24 ~ te.resource', te.resource)
+        test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
 
+        test: (module, chunks) =>{
+          // console.log(chunks)
+
+          // filterByEntryPoint()(module, chunks)
+
+
+          if(module?.resource?.includes('@mui/material')){
+            debugger
             return true
           }
-          // if(te.resource?.includes('@mui') && te?.canBeInitial && te.canBeInitial()){
-
-          //   console.log(te.resource)
-
-          //   return true
-          // }
 
           return false
+
+
+        },
+        
+        // test: (te, teee) =>{
+        //   if(te.resource?.includes('date-fns')){
+            
+        //     // console.log('31', te?.rawRequest)
+        //     // console.log('🚀 ~ file: webpack.config.js:24 ~ te.resource', te.resource)
+
+        //     return true
+        //   }
+        //   // if(te.resource?.includes('@mui') && te?.canBeInitial && te.canBeInitial()){
+
+        //   //   console.log(te.resource)
+
+        //   //   return true
+        //   // }
+
+        //   return false
           
 
-          // return te.resource?.includes('@mui')
-        },
-        name: (module, chunks, cacheGroupKey) =>{
-          const identifier = module.identifier()
-          // debugger;
-          // console.log(te)
-          // console.log(te.identifier())
-          // return te.identifier()
+        //   // return te.resource?.includes('@mui')
+        // },
+        // name: (module, chunks, cacheGroupKey) =>{
+        //   const identifier = module.identifier()
+        //   // debugger;
+        //   // console.log(te)
+        //   // console.log(te.identifier())
+        //   // return te.identifier()
 
-          // if(identifier?.includes('addDays')){
+        //   // if(identifier?.includes('addDays')){
 
-          //   return 'addDays'
+        //   //   return 'addDays'
+
+        //   // }
+        //   return 'daysToWeeks'
+        // },
+        name:'mui',
+        chunks(chunk) {
+          console.log('🚀 ~ file: webpack.config.js:58 ~ chunks ~ chunk', chunk.name)
+
+
+          return true
+
+
+          // if(chunk.name){
 
           // }
-          return 'daysToWeeks'
-        },
-        chunks(chunk, te) {
-          debugger;
 
-          // if(chunk){
-          //   console.log('🚀 ~ file: webpack.config.js:47 ~ chunks ~ chunk', chunk.canBeInitial())
-          // }
+          if(chunk){
+            console.log('🚀 ~ file: webpack.config.js:47 ~ chunks ~ chunk', chunk.canBeInitial())
+          }
 
           // console.log('🚀 ~ file: webpack.config.js:53 ~ chunks ~ chunk?.canBeInitial()', chunk)
           // console.log('🚀 ~ file: webpack.config.js:53 ~ chunks ~ chunk?.canBeInitial()', chunk)
           // console.log('🚀 ~ file: webpack.config.js:53 ~ chunks ~ chunk?.canBeInitial()', chunk?.entryModule && chunk?.entryModule())
           // console.log('🚀 ~ file: webpack.config.js:53 ~ chunks ~ chunk?.canBeInitial()', chunk?.getChunkMaps && chunk?.getChunkMaps() && )
 
-          return true
+          // return true
           // return false
           // return chunk?.canBeInitial()
         },
+        // chunks: (chunk) => filterChunkByEntryPoint({
+        //   chunk,
+        //   entry: 'main',
+        //   chunkType: FILTER_CHUNK_TYPE.ALL
+        // }),
         // chunks: 'all',
         priority: 10,
         enforce: true
@@ -87,7 +181,10 @@ const defaultWebpackSplit = {
 };
 
 module.exports = {
-  entry: './src/index',
+  entry: {
+    desktop: './src/desktop',
+    mobile: './src/index-mobile'
+  },
   mode: 'development',
   target: 'web',
   devServer: {
@@ -99,9 +196,9 @@ module.exports = {
   output: {
     publicPath: 'auto',
   },
-  optimization: {
-    splitChunks: defaultWebpackSplit
-  },
+  // optimization: {
+  //   splitChunks: defaultWebpackSplit
+  // },
   module: {
     rules: [
       {
@@ -158,6 +255,6 @@ module.exports = {
       silent: false
     }),
     new LoadablePlugin(),
-    new BundleAnalyzerPlugin({defaultSizes: 'stat'}),
+    // new BundleAnalyzerPlugin({defaultSizes: 'stat'}),
   ],
 };

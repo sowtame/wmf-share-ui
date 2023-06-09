@@ -1,5 +1,6 @@
-import LocalButton from './Widget';
+import LocalButton from './remote/index';
 import React from 'react';
+
 const App = () => (
   <div>
     <h1>Dynamic System Host</h1>

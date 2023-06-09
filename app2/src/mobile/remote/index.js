@@ -1,10 +1,11 @@
 import React from 'react';
 
 // import TextField from '@mui/material/TextField';
-// import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 // import Select from '@mui/material/Select';
 // import MenuItem from '@mui/material/MenuItem';
 // import Dialog from '@mui/material/Dialog';
+import {MobileHeader} from './components/Header';
 
 export default function Widget() {
   return (
@@ -17,10 +18,11 @@ export default function Widget() {
       }}
       data-e2e="APP_2__WIDGET"
     >
-      <h2>App 2 Widget</h2>
-      {/* <TextField />
+      <MobileHeader />
+      <h2>App 2 WidgetMobile</h2>
+      {/* <TextField /> */}
       <Button>Button</Button>
-      <Select
+      {/* <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={10}

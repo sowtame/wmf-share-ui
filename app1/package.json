@@ -21,6 +21,7 @@
     "start": "webpack-cli serve",
     "build": "webpack --mode production",
     "serve": "serve dist -p 3001",
+    "st": "node --inspect-brk ./node_modules/webpack/bin/webpack.js",
     "clean": "rm -rf dist"
   },
   "dependencies": {

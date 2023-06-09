@@ -13,29 +13,62 @@ const defaultWebpackSplit = {
   maxInitialRequests: 30,
   enforceSizeThreshold: 50000,
   cacheGroups: {
-      'vendor-core-components': {
+      'mui-widget-mobile': {
         // test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
-        test: (te) =>{
-          console.log('test', te.resource)
+        test: (module, chunks) =>{
+          
+          if(module.resource?.includes('@mui')){
+            // console.log('test', module.resource)
+            debugger
+            return true
+          }
 
-          return te.resource?.includes('@mui')
+          return false
         },
-        chunks: 'all',
+        chunks: (chunk) => {
+          console.log('🚀 ~ file: webpack.config.js:34 ~ chunk', chunk?.name)
+          // return chunk?.name === 'mobile'
+          return chunk?.name === 'mobile_remote'
+        },
         priority: 10,
-        name: 'vendor-core-components'
+        name: 'mui-widget-mobile',
+        enforce: true,
+        reuseExistingChunk: true,
       },
-      'vendor-core-components': {
+      'mui-widget-desktop': {
         // test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
-        test: (te) =>{
-          console.log('test', te.resource)
+        test: (module, chunks) =>{
+          
+          if(module.resource?.includes('@mui')){
+            // console.log('test', module.resource)
+            debugger
+            return true
+          }
 
-          return te.resource?.includes('@mui')
+          return false
         },
-        chunks: 'all',
+        chunks: (chunk) => {
+
+          // return chunk?.name === 'desktop'
+          return chunk?.name === 'desktop_remote'
+        },
         priority: 10,
-        name: 'vendor-core-components'
+        name: 'mui-widget-desktop',
+        enforce: true,
+        reuseExistingChunk: true,
       },
-      defaultVendors: {
+      // 'vendor-core-components': {
+      //   // test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
+      //   test: (te) =>{
+      //     console.log('test', te.resource)
+
+      //     return te.resource?.includes('@mui')
+      //   },
+      //   chunks: 'all',
+      //   priority: 10,
+      //   name: 'vendor-core-components'
+      // },
+      'remote-venor': {
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
@@ -49,7 +82,22 @@ const defaultWebpackSplit = {
 };
 
 module.exports = {
-  entry: './src/index',
+  // entry: undefined,
+  // entry:  './src/index',
+  entry:  {
+    mobile: './src/mobile/index',
+    desktop: './src/desktop/index'
+  },
+  // entry:  {
+  //   mobile: './src/mobile/remote/index',
+  //   desktop: './src/desktop/remote/index',
+  // },
+//   entry: {
+//     'index': './src/index',
+//     // 'index': './src/remotes/index',
+//     // 'desktop': './src/remotes/desktop/index',
+//     // 'mobile': './src/remotes/mobile/index',
+// },
   mode: 'development',
   // mode: 'production',
   target: 'web',
@@ -57,6 +105,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
+    port: 3002,
   },
   output: {
     publicPath: 'auto',
@@ -82,33 +131,30 @@ module.exports = {
       name: 'app2',
       filename: 'remoteEntry.js',
       exposes: {
-        './Widget': './src/Widget',
+        './desktop': './src/desktop/remote/index',
+        './mobile': './src/mobile/remote/index',
       },
       shared: {
-        moment: deps.moment,
         react: {
           requiredVersion: deps.react,
           version: deps.react,
-          import: 'react', // the "react" package will be used a provided and fallback module
-          shareKey: 'react', // under this name the shared module will be placed in the share scope
-          shareScope: 'default', // share scope with this name will be used
-          singleton: true, // only a single version of the shared module is allowed
+          singleton: true,
         },
         'react-dom': {
           requiredVersion: deps['react-dom'],
           version: deps['react-dom'],
-          singleton: true, // only a single version of the shared module is allowed
+          singleton: true, 
         },
-        '@mui/material/': {
-          requiredVersion: deps['@mui/material'],
-          version: deps['@mui/material'],
-          singleton: true,
-        },
+        // '@mui/material/': {
+        //   requiredVersion: deps['@mui/material'],
+        //   version: deps['@mui/material'],
+        //   singleton: true,
+        // },
       },
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
-    // new BundleAnalyzerPlugin({analyzerHost: '127.0.0.1', analyzerPort: 8080})
+    new BundleAnalyzerPlugin({analyzerHost: '127.0.0.1', analyzerPort: 8080, defaultSizes: 'stat'})
   ],
 };

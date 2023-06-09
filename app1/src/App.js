@@ -1,8 +1,9 @@
 import React from 'react';
-import addDays from 'date-fns/addDays';
-import addDam from 'date-fns/addMinutes';
-import add2Dam from 'date-fns/addHours';
+// import addDays from 'date-fns/addDays';
+// import addDam from 'date-fns/addMinutes';
+// import add2Dam from 'date-fns/addHours';
 
+import Badge from '@mui/material/Badge';
 // import TextField from '@mui/material/TextField';
 // import Button from '@mui/material/Button';
 // import Select from '@mui/material/Select';
@@ -10,9 +11,9 @@ import add2Dam from 'date-fns/addHours';
 import loadable from '@loadable/component'
 // import Dialog from '@mui/material/Dialog';
 
-// const LoadableComponent = loadable(() => import('./loadable-component'))
+const LoadableComponent = loadable(() => import('./loadable-component'))
 
-const LoadableComponent = React.lazy(() => import('./loadable-component'));
+// const LoadableComponent = React.lazy(() => import('./loadable-component'));
 
 
 function loadComponent(scope, module) {
@@ -75,6 +76,12 @@ const useDynamicScript = url => {
   };
 };
 
+const PENSION_ENTRY = {
+  url: 'http://localhost:8080/assets/remoteEntry.js',
+  scope: 'newclick_pension_transfer_ui',
+  module: './desktop',
+}
+
 const componentCache = new Map();
 export const useFederatedComponent = (remoteUrl, scope, module) => {
   const key = `${remoteUrl}-${scope}-${module}`;
@@ -99,16 +106,23 @@ export const useFederatedComponent = (remoteUrl, scope, module) => {
 };
 
 function App() {
-  const [{ module, scope, url }, setSystem] = React.useState({});
+  const [{ module, scope, url }, setSystem] = React.useState(PENSION_ENTRY);
 
   const [isOpenDynamic, setIsOpenDynamic] = React.useState(false);
 
 
-  function setApp2() {
+  function setApp2Desktop() {
     setSystem({
       url: 'http://localhost:3002/remoteEntry.js',
       scope: 'app2',
-      module: './Widget',
+      module: './desktop',
+    });
+  }
+  function setApp2Mobile() {
+    setSystem({
+      url: 'http://localhost:3002/remoteEntry.js',
+      scope: 'app2',
+      module: './mobile',
     });
   }
 
@@ -117,6 +131,18 @@ function App() {
       url: 'http://localhost:3003/remoteEntry.js',
       scope: 'app3',
       module: './Widget',
+    });
+  }
+  function setTransfersAppDesktop() {
+    window.appAssetsPath === 'http://localhost:8080/assets/'
+    setSystem(PENSION_ENTRY);
+  }
+  function setTransfersAppMobile() {
+    window.appAssetsPath === 'http://localhost:8080/assets/'
+    setSystem({
+      url: 'http://localhost:8080/assets/remoteEntry.js',
+      scope: 'newclick_pension_transfer_ui',
+      module: './mobile',
     });
   }
 
@@ -135,8 +161,16 @@ function App() {
         The Dynamic System will take advantage Module Federation <strong>remotes</strong> and{' '}
         <strong>exposes</strong>. It will no load components that have been loaded already.
       </p>
-      <button onClick={setApp2}>Load App 2 Widget</button>
+      <button onClick={setApp2Desktop}>Load App 2 Widget desktop</button>
+      <button onClick={setApp2Mobile}>Load App 2 Widget mobile</button>
       <button onClick={setApp3}>Load App 3 Widget</button>
+
+
+      <div>
+      <button onClick={setTransfersAppDesktop}>Load transfer desktop</button>
+      <button onClick={setTransfersAppMobile}>Load App 3 mobile</button>
+      </div>
+      <Badge>fafa</Badge>
       {/* <TextField /> */}
       {/* <Select
           labelId="demo-simple-select-label"
