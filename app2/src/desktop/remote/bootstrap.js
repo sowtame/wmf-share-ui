@@ -1,0 +1,1 @@
+import( /* webpackChunkName: "desktop_remote" */ './index');

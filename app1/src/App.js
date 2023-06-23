@@ -76,11 +76,11 @@ const useDynamicScript = url => {
   };
 };
 
-const PENSION_ENTRY = {
-  url: 'http://localhost:8080/assets/remoteEntry.js',
-  scope: 'newclick_pension_transfer_ui',
-  module: './desktop',
-}
+// const PENSION_ENTRY = {
+//   url: 'http://localhost:8080/assets/remoteEntry.js',
+//   scope: 'newclick_transfers_ui',
+//   module: './desktop',
+// }
 
 const componentCache = new Map();
 export const useFederatedComponent = (remoteUrl, scope, module) => {
@@ -106,7 +106,7 @@ export const useFederatedComponent = (remoteUrl, scope, module) => {
 };
 
 function App() {
-  const [{ module, scope, url }, setSystem] = React.useState(PENSION_ENTRY);
+  const [{ module, scope, url }, setSystem] = React.useState({});
 
   const [isOpenDynamic, setIsOpenDynamic] = React.useState(false);
 
@@ -141,7 +141,7 @@ function App() {
     window.appAssetsPath === 'http://localhost:8080/assets/'
     setSystem({
       url: 'http://localhost:8080/assets/remoteEntry.js',
-      scope: 'newclick_pension_transfer_ui',
+      scope: 'newclick_transfers_ui',
       module: './mobile',
     });
   }

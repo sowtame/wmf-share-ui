@@ -84,14 +84,14 @@ const defaultWebpackSplit = {
 module.exports = {
   // entry: undefined,
   // entry:  './src/index',
-  entry:  {
-    mobile: './src/mobile/index',
-    desktop: './src/desktop/index'
-  },
   // entry:  {
-  //   mobile: './src/mobile/remote/index',
-  //   desktop: './src/desktop/remote/index',
+  //   mobile: './src/mobile/index',
+  //   desktop: './src/desktop/index'
   // },
+  entry:  {
+    mobile: './src/mobile/remote/bootstrap',
+    desktop: './src/desktop/remote/bootstrap',
+  },
 //   entry: {
 //     'index': './src/index',
 //     // 'index': './src/remotes/index',
