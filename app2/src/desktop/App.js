@@ -1,4 +1,4 @@
-import LocalButton from './remote/index';
+import LocalButton from './remote';
 import React from 'react';
 
 const App = () => (

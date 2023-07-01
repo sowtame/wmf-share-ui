@@ -1,1 +1,0 @@
-import( /* webpackChunkName: "mobile_remote" */ './index');

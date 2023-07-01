@@ -8,7 +8,7 @@
   ],
   "version": "0.0.0",
   "scripts": {
-    "start": "lerna run --scope=dynamic-remotes_app* --parallel start",
+    "start": "lerna run --scope=app* --parallel start",
     "build": "lerna run --scope=dynamic-remotes_app* --parallel build",
     "serve": "lerna run --scope=dynamic-remotes_app* --parallel serve",
     "clean": "lerna run --scope=dynamic-remotes_app* --parallel clean",

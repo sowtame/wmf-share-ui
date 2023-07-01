@@ -28,7 +28,7 @@ const defaultWebpackSplit = {
         chunks: (chunk) => {
           console.log('🚀 ~ file: webpack.config.js:34 ~ chunk', chunk?.name)
           // return chunk?.name === 'mobile'
-          return chunk?.name === 'mobile_remote'
+          return chunk?.name.includes('mobile')
         },
         priority: 10,
         name: 'mui-widget-mobile',
@@ -50,7 +50,7 @@ const defaultWebpackSplit = {
         chunks: (chunk) => {
 
           // return chunk?.name === 'desktop'
-          return chunk?.name === 'desktop_remote'
+          return chunk?.name.includes('desktop')
         },
         priority: 10,
         name: 'mui-widget-desktop',
@@ -89,15 +89,9 @@ module.exports = {
   //   desktop: './src/desktop/index'
   // },
   entry:  {
-    mobile: './src/mobile/remote/bootstrap',
-    desktop: './src/desktop/remote/bootstrap',
+    mobile: './src/mobile/index',
+    desktop: './src/desktop/index',
   },
-//   entry: {
-//     'index': './src/index',
-//     // 'index': './src/remotes/index',
-//     // 'desktop': './src/remotes/desktop/index',
-//     // 'mobile': './src/remotes/mobile/index',
-// },
   mode: 'development',
   // mode: 'production',
   target: 'web',
@@ -111,8 +105,7 @@ module.exports = {
     publicPath: 'auto',
   },
   optimization: {
-    splitChunks: defaultWebpackSplit
-    // splitChunks: undefined
+    splitChunks: defaultWebpackSplit,
   },
   module: {
     rules: [
@@ -131,8 +124,14 @@ module.exports = {
       name: 'app2',
       filename: 'remoteEntry.js',
       exposes: {
-        './desktop': './src/desktop/remote/index',
-        './mobile': './src/mobile/remote/index',
+        './desktop': {
+          import: './src/desktop/remote',
+          name: 'desktop_remote',
+        },
+        './mobile': {
+          import: './src/mobile/remote',
+          name: 'mobile_remote',
+        }
       },
       shared: {
         react: {
