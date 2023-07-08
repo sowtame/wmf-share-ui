@@ -27,7 +27,6 @@ const defaultWebpackSplit = {
         },
         chunks: (chunk) => {
           console.log('🚀 ~ file: webpack.config.js:34 ~ chunk', chunk?.name)
-          // return chunk?.name === 'mobile'
           return chunk?.name.includes('mobile')
         },
         priority: 10,
@@ -57,17 +56,6 @@ const defaultWebpackSplit = {
         enforce: true,
         reuseExistingChunk: true,
       },
-      // 'vendor-core-components': {
-      //   // test: /[\\/]node_modules[\\/](@mui\/material)[\\/]/,
-      //   test: (te) =>{
-      //     console.log('test', te.resource)
-
-      //     return te.resource?.includes('@mui')
-      //   },
-      //   chunks: 'all',
-      //   priority: 10,
-      //   name: 'vendor-core-components'
-      // },
       'remote-venor': {
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
@@ -82,18 +70,11 @@ const defaultWebpackSplit = {
 };
 
 module.exports = {
-  // entry: undefined,
-  // entry:  './src/index',
-  // entry:  {
-  //   mobile: './src/mobile/index',
-  //   desktop: './src/desktop/index'
-  // },
   entry:  {
     mobile: './src/mobile/index',
     desktop: './src/desktop/index',
   },
   mode: 'development',
-  // mode: 'production',
   target: 'web',
   devServer: {
     static: {

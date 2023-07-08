@@ -1,9 +1,9 @@
 node_modules
-app1/node_modules
+host/node_modules
 app2/node_modules
 app3/node_modules
 
-app1/dist
+host/dist
 app2/dist
 app3/dist
 
