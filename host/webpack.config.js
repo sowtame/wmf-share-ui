@@ -8,68 +8,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const { BundleStatsWebpackPlugin } = require('bundle-stats-webpack-plugin');
 
-function filterByEntryPoint(entry) {
-  return function (module, chunks) {
-      for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
-
-          if (chunk.groupsIterable) {
-              for (const group of chunk.groupsIterable) {
-                  if (group.getParents()[0]) {
-
-                    debugger
-                      console.log(group.getParents()[0].name);
-                      if (group.getParents()[0].name === entry) {
-                          return true;
-                      }
-                  }
-              }
-          }
-      }
-
-      return false;
-  };
-}
-
-const FILTER_CHUNK_TYPE = {
-  ALL: 'all',
-  ASYNC: 'async',
-  INITIAL: 'initial'
-};
-function filterChunkByEntryPoint({ chunk, entryName, chunkType } = {}) {
-  const validateMap = {
-    [FILTER_CHUNK_TYPE.ALL]: () => true,
-    [FILTER_CHUNK_TYPE.ASYNC]: () => !chunk.canBeInitial(),
-    [FILTER_CHUNK_TYPE.INITIAL]: () => chunk.canBeInitial()
-  };
-
-  if (validateMap[chunkType] && validateMap[chunkType]() && chunk.groupsIterable) {
-    for (const group of chunk.groupsIterable) {
-      let currentGroup = group;
-
-      while (currentGroup) {
-        const parentGroup = currentGroup.getParents()[0];
-
-        console.log(parentGroup?.name)
-
-        if (parentGroup) {
-          currentGroup = parentGroup;
-        } else {
-          break;
-        }
-      }
-
-      console.log('cc',currentGroup.name)
-
-      // entrypoint
-      if (currentGroup.name === entryName) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 const defaultWebpackSplit = {
   chunks: 'all',
@@ -214,10 +152,6 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
       name: 'app1',
-      // adds react as shared module
-      // version is inferred from package.json
-      // there is no version check for the required version
-      // so it will always use the higher version found
       shared: {
         react: {
           requiredVersion: deps['react'],
