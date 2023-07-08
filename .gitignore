@@ -1,11 +1,9 @@
 node_modules
 host/node_modules
-app2/node_modules
-app3/node_modules
+remote-split/node_modules
 
 host/dist
-app2/dist
-app3/dist
+remote-split/dist
 
 
 .nvmrc
